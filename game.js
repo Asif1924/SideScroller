@@ -1,44 +1,136 @@
 const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvasCtx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Define your game variables here
 
 // Player object
-const player = {
-  x: 50,
-  y: canvas.height - 100,
-  width: 32,
-  height: 32,
-  velocityX: 0,
-  velocityY: 0,
-  speed: 5,
-  jumping: false,
-  grounded: false,
-};
+let gravity = 0.5;
 
+class Player {
+  constructor() {
+    this.position = {
+      x: 100,
+      y: 100,
+    };
+    this.velocity = {
+      x: 0,
+      y: 1,
+    };
+    this.width = 30;
+    this.height = 30;
+  }
+
+  draw() {
+    canvasCtx.fillStyle = "red";
+    canvasCtx.fillRect(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+  }
+
+  update() {
+    this.draw();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+    if (this.position.y + this.height + this.velocity.y <= canvas.height)
+      this.velocity.y += gravity;
+    else this.velocity.y = 0;
+  }
+}
+
+class Platform{
+    constructor(){
+        this.position = {
+            x:200,
+            y:100
+        }
+        this.width = 200;
+        this.height = 20;
+    }
+    draw(){
+        canvasCtx.fillStyle = 'blue';
+        canvasCtx.fillRect(this.position.x,this.position.y,this.width,this.height);
+    }
+}
 // Load player image
 const playerImage = new Image();
+const platform = new Platform();
 playerImage.src = "mario-right.jpeg"; // Replace "player.png" with your image file
 
+const player = new Player();
+//player.draw();
 
 // Event listeners for keyboard controls
-const keys = {};
+const keys = {
+    right:{
+        pressed:false
+    },
+    left:{
+        pressed:false
+    }
 
-window.addEventListener("keydown", (event) => {
-  keys[event.keyCode] = true;
+};
+
+addEventListener("keydown", ({ keyCode }) => {
+  switch (keyCode) {
+    case 37:
+      console.log("left");
+      keys.left.pressed=true;
+      player.velocity.x -= 1;
+      break;
+    case 39:
+      console.log("right");
+      keys.right.pressed=true;
+      player.velocity.x += 1;
+      break;
+    case 32:
+      console.log("jump");
+      player.velocity.y -= 10;
+      break;
+  }
 });
 
-window.addEventListener("keyup", (event) => {
-  keys[event.keyCode] = false;
+addEventListener("keyup", ({ keyCode }) => {
+  switch (keyCode) {
+    case 37:
+      console.log("left");
+      keys.left.pressed=false;      
+      break;
+    case 39:
+      console.log("right");
+      keys.right.pressed=false;
+      break;
+    case 32:
+      console.log("jump");      
+      player.velocity.y-=10;
+      break;
+  }
 });
 
 // Game loop function
 function gameLoop() {
-  update();
-  render();
   requestAnimationFrame(gameLoop);
+  canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  player.update();
+  platform.draw();
+
+    if(keys.right.pressed){
+        player.velocity.x=5;
+    }else if(keys.left.pressed){
+        player.velocity.x=-5;
+    }else{
+        player.velocity.x=0;
+    }
+
+    if(player.position.y+player.height<=platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width>=platform.position.x && player.position.x <= platform.position.x+platform.width){
+        player.velocity.y=0;
+    }
+  //update();
+  //render();
 }
 
 // Update game state
@@ -46,33 +138,33 @@ function update() {
   // Update player position based on keyboard input
   if (keys[37]) {
     // Left arrow key
-    player.velocityX = -player.speed;
+    Player.velocityX = -Player.speed;
   } else if (keys[39]) {
     // Right arrow key
-    player.velocityX = player.speed;
+    Player.velocityX = Player.speed;
   } else {
-    player.velocityX = 0;
+    Player.velocityX = 0;
   }
 
   // Jumping logic
-  if (keys[32] && player.grounded) {
+  if (keys[32] && Player.grounded) {
     // Up arrow key
-    player.velocityY = -player.speed * 2;
-    player.jumping = true;
-    player.grounded = false;
+    Player.velocityY = -Player.speed * 2;
+    Player.jumping = true;
+    Player.grounded = false;
   }
 
   // Apply gravity to player
-  player.velocityY += 1.5;
-  player.x += player.velocityX;
-  player.y += player.velocityY;
+  Player.velocityY += 1.5;
+  Player.x += Player.velocityX;
+  Player.y += Player.velocityY;
 
   // Collision detection with ground (assuming ground level at canvas height)
-  if (player.y > canvas.height - player.height) {
-    player.y = canvas.height - player.height;
-    player.velocityY = 0;
-    player.jumping = false;
-    player.grounded = true;
+  if (Player.y > canvas.height - Player.height) {
+    Player.y = canvas.height - Player.height;
+    Player.velocityY = 0;
+    Player.jumping = false;
+    Player.grounded = true;
   }
 }
 
@@ -82,12 +174,11 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Render player on the canvas
-//   ctx.fillStyle = "red";
-//   ctx.fillRect(player.x, player.y, player.width, player.height);
+  //   ctx.fillStyle = "red";
+  //   ctx.fillRect(player.x, player.y, player.width, player.height);
 
   // Render player image on the canvas
-  ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
-
+  ctx.drawImage(playerImage, Player.x, Player.y, Player.width, Player.height);
 }
 
 // Start the game loop
