@@ -18,6 +18,11 @@ const player = {
   grounded: false,
 };
 
+// Load player image
+const playerImage = new Image();
+playerImage.src = "mario-right.jpeg"; // Replace "player.png" with your image file
+
+
 // Event listeners for keyboard controls
 const keys = {};
 
@@ -50,7 +55,7 @@ function update() {
   }
 
   // Jumping logic
-  if (keys[38] && player.grounded) {
+  if (keys[32] && player.grounded) {
     // Up arrow key
     player.velocityY = -player.speed * 2;
     player.jumping = true;
@@ -77,8 +82,12 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Render player on the canvas
-  ctx.fillStyle = "red";
-  ctx.fillRect(player.x, player.y, player.width, player.height);
+//   ctx.fillStyle = "red";
+//   ctx.fillRect(player.x, player.y, player.width, player.height);
+
+  // Render player image on the canvas
+  ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+
 }
 
 // Start the game loop
