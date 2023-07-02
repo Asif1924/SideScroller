@@ -43,7 +43,7 @@ class Player {
 }
 
 class Platform {
-  constructor({x,y}) {
+  constructor({ x, y }) {
     this.position = {
       x,
       y,
@@ -64,7 +64,10 @@ class Platform {
 // Load player image
 const playerImage = new Image();
 
-const platforms = [new Platform({x:200,y:100}), new Platform({x:500,y:200}) ];
+const platforms = [
+  new Platform({ x: 200, y: 100 }),
+  new Platform({ x: 500, y: 200 }),
+];
 playerImage.src = "mario-right.jpeg"; // Replace "player.png" with your image file
 
 const player = new Player();
@@ -84,11 +87,11 @@ addEventListener("keydown", ({ keyCode }) => {
   switch (keyCode) {
     case 37:
       console.log("left");
-      keys.left.pressed = true;      
+      keys.left.pressed = true;
       break;
     case 39:
       console.log("right");
-      keys.right.pressed = true;      
+      keys.right.pressed = true;
       break;
     case 32:
       console.log("jump");
@@ -114,6 +117,7 @@ addEventListener("keyup", ({ keyCode }) => {
   }
 });
 
+let scrollOffset = 0;
 // Game loop function
 function gameLoop() {
   requestAnimationFrame(gameLoop);
@@ -121,37 +125,42 @@ function gameLoop() {
   player.update();
   platforms.forEach((platform) => {
     platform.draw();
-  })
-  
+  });
 
-  if (keys.right.pressed && player.position.x < 400 ) {
+  if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = 5;
-  } else if (keys.left.pressed && player.position.x>100) {
+  } else if (keys.left.pressed && player.position.x > 100) {
     player.velocity.x = -5;
   } else {
     player.velocity.x = 0;
-    if(keys.right.pressed){
-        platforms.forEach((platform)=>{
-            platform.position.x -= 5;
-        })        
-    }else if(keys.left.pressed){
-        platforms.forEach((platform)=>{
-            platform.position.x += 5;
-        })        
+    if (keys.right.pressed) {
+      scrollOffset += 5;
+      platforms.forEach((platform) => {
+        platform.position.x -= 5;
+      });
+    } else if (keys.left.pressed) {
+      scrollOffset -= 5;
+      platforms.forEach((platform) => {
+        platform.position.x += 5;
+      });
     }
   }
 
-  platforms.forEach((platform)=>{
+  platforms.forEach((platform) => {
     if (
-        player.position.y + player.height <= platform.position.y &&
-        player.position.y + player.height + player.velocity.y >=
-          platform.position.y &&
-        player.position.x + player.width >= platform.position.x &&
-        player.position.x <= platform.position.x + platform.width
-      ) {
-        player.velocity.y = 0;
-      }    
-  })
+      player.position.y + player.height <= platform.position.y &&
+      player.position.y + player.height + player.velocity.y >=
+        platform.position.y &&
+      player.position.x + player.width >= platform.position.x &&
+      player.position.x <= platform.position.x + platform.width
+    ) {
+      player.velocity.y = 0;
+    }
+  });
+
+  if(scrollOffset>2000){
+    console.log("Winner");
+  }
   //update();
   //render();
 }
