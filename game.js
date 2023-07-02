@@ -63,7 +63,8 @@ class Platform {
 }
 // Load player image
 const playerImage = new Image();
-const platform = new Platform();
+
+const platforms = [new Platform()];
 playerImage.src = "mario-right.jpeg"; // Replace "player.png" with your image file
 
 const player = new Player();
@@ -118,7 +119,10 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
   player.update();
-  platform.draw();
+  platforms.forEach((platform) => {
+    platform.draw();
+  })
+  
 
   if (keys.right.pressed && player.position.x < 400 ) {
     player.velocity.x = 5;
@@ -127,21 +131,27 @@ function gameLoop() {
   } else {
     player.velocity.x = 0;
     if(keys.right.pressed){
-        platform.position.x -= 5;
+        platforms.forEach((platform)=>{
+            platform.position.x -= 5;
+        })        
     }else if(keys.left.pressed){
-        platform.position.x += 5;
+        platforms.forEach((platform)=>{
+            platform.position.x += 5;
+        })        
     }
   }
 
-  if (
-    player.position.y + player.height <= platform.position.y &&
-    player.position.y + player.height + player.velocity.y >=
-      platform.position.y &&
-    player.position.x + player.width >= platform.position.x &&
-    player.position.x <= platform.position.x + platform.width
-  ) {
-    player.velocity.y = 0;
-  }
+  platforms.forEach((platform)=>{
+    if (
+        player.position.y + player.height <= platform.position.y &&
+        player.position.y + player.height + player.velocity.y >=
+          platform.position.y &&
+        player.position.x + player.width >= platform.position.x &&
+        player.position.x <= platform.position.x + platform.width
+      ) {
+        player.velocity.y = 0;
+      }    
+  })
   //update();
   //render();
 }
