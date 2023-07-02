@@ -43,10 +43,10 @@ class Player {
 }
 
 class Platform {
-  constructor() {
+  constructor({x,y}) {
     this.position = {
-      x: 200,
-      y: 100,
+      x,
+      y,
     };
     this.width = 200;
     this.height = 20;
@@ -64,7 +64,7 @@ class Platform {
 // Load player image
 const playerImage = new Image();
 
-const platforms = [new Platform()];
+const platforms = [new Platform({x:200,y:100}), new Platform({x:500,y:200}) ];
 playerImage.src = "mario-right.jpeg"; // Replace "player.png" with your image file
 
 const player = new Player();
