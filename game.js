@@ -42,19 +42,24 @@ class Player {
   }
 }
 
-class Platform{
-    constructor(){
-        this.position = {
-            x:200,
-            y:100
-        }
-        this.width = 200;
-        this.height = 20;
-    }
-    draw(){
-        canvasCtx.fillStyle = 'blue';
-        canvasCtx.fillRect(this.position.x,this.position.y,this.width,this.height);
-    }
+class Platform {
+  constructor() {
+    this.position = {
+      x: 200,
+      y: 100,
+    };
+    this.width = 200;
+    this.height = 20;
+  }
+  draw() {
+    canvasCtx.fillStyle = "blue";
+    canvasCtx.fillRect(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+  }
 }
 // Load player image
 const playerImage = new Image();
@@ -66,26 +71,23 @@ const player = new Player();
 
 // Event listeners for keyboard controls
 const keys = {
-    right:{
-        pressed:false
-    },
-    left:{
-        pressed:false
-    }
-
+  right: {
+    pressed: false,
+  },
+  left: {
+    pressed: false,
+  },
 };
 
 addEventListener("keydown", ({ keyCode }) => {
   switch (keyCode) {
     case 37:
       console.log("left");
-      keys.left.pressed=true;
-      player.velocity.x -= 1;
+      keys.left.pressed = true;      
       break;
     case 39:
       console.log("right");
-      keys.right.pressed=true;
-      player.velocity.x += 1;
+      keys.right.pressed = true;      
       break;
     case 32:
       console.log("jump");
@@ -98,15 +100,15 @@ addEventListener("keyup", ({ keyCode }) => {
   switch (keyCode) {
     case 37:
       console.log("left");
-      keys.left.pressed=false;      
+      keys.left.pressed = false;
       break;
     case 39:
       console.log("right");
-      keys.right.pressed=false;
+      keys.right.pressed = false;
       break;
     case 32:
-      console.log("jump");      
-      player.velocity.y-=10;
+      console.log("jump");
+      player.velocity.y -= 10;
       break;
   }
 });
@@ -118,17 +120,28 @@ function gameLoop() {
   player.update();
   platform.draw();
 
+  if (keys.right.pressed && player.position.x < 400 ) {
+    player.velocity.x = 5;
+  } else if (keys.left.pressed && player.position.x>100) {
+    player.velocity.x = -5;
+  } else {
+    player.velocity.x = 0;
     if(keys.right.pressed){
-        player.velocity.x=5;
+        platform.position.x -= 5;
     }else if(keys.left.pressed){
-        player.velocity.x=-5;
-    }else{
-        player.velocity.x=0;
+        platform.position.x += 5;
     }
+  }
 
-    if(player.position.y+player.height<=platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width>=platform.position.x && player.position.x <= platform.position.x+platform.width){
-        player.velocity.y=0;
-    }
+  if (
+    player.position.y + player.height <= platform.position.y &&
+    player.position.y + player.height + player.velocity.y >=
+      platform.position.y &&
+    player.position.x + player.width >= platform.position.x &&
+    player.position.x <= platform.position.x + platform.width
+  ) {
+    player.velocity.y = 0;
+  }
   //update();
   //render();
 }
